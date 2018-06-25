@@ -4,43 +4,10 @@ package nmap
 import (
 	"encoding/xml"
 	"fmt"
-	"strconv"
-	"time"
 )
 
-type Timestamp time.Time
-
-// str2time converts a string containing a UNIX timestamp to to a time.Time.
-func (t *Timestamp) str2time(s string) (err error) {
-	ts, err := strconv.Atoi(s)
-	if err != nil {
-		return
-	}
-	*t = Timestamp(time.Unix(int64(ts), 0))
-	return
-}
-
-// time2str formats the time.Time value as a UNIX timestamp string.
-// XXX these might also need to be changed to pointers. See str2time and UnmarshalXMLAttr.
-func (t Timestamp) time2str() string {
-	return fmt.Sprint(time.Time(t))
-}
-
-func (t Timestamp) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("\"%s\"", t.time2str())), nil
-}
-
-func (t Timestamp) UnmarshalJSON(b []byte) error {
-	return t.str2time(string(b))
-}
-
-func (t *Timestamp) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	return xml.Attr{Name: name, Value: t.time2str()}, nil
-}
-
-func (t *Timestamp) UnmarshalXMLAttr(attr xml.Attr) (err error) {
-	return t.str2time(attr.Value)
-}
+// Use int32 instead of Time.time as seen on the original lib, so we can gob encode it.
+type Timestamp int32
 
 // NmapRun is contains all the data for a single nmap scan.
 type NmapRun struct {
