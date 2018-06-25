@@ -3,7 +3,6 @@ package nmap
 
 import (
 	"encoding/xml"
-	"fmt"
 )
 
 // Use int32 instead of Time.time as seen on the original lib, so we can gob encode it.
